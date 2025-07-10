@@ -1,9 +1,9 @@
-# VLC Web/Desktop App Frontend
+# mediaInk Web/Desktop App Frontend
 
-This directory contains the Electron-based (or web) frontend for the VLC extension project.
+This directory contains the Electron-based (or web) frontend for the mediaInk extension project.
 
 ## Features
-- Movie playback control (via VLC backend)
+- Movie playback control (via mediaInk backend)
 - Subtitle generation/fetching
 - Movie suggestions based on watchlist
 
