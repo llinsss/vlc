@@ -60,3 +60,4 @@ xcodeproj/
 !buildsystem/
 !build.rs
 !extras/package/apple/build.sh
+node_modules

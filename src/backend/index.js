@@ -2,6 +2,9 @@ const express = require('express');
 const axios = require('axios');
 const app = express();
 const port = 4000;
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+const { spawn } = require('child_process');
 
 app.use(express.json());
 
@@ -135,10 +138,24 @@ app.get('/api/watchlist', (req, res) => {
   res.json(loadWatchlist());
 });
 
-// Placeholder for subtitle generation/fetching
-app.post('/api/subtitles/generate', async (req, res) => {
-  // To be implemented: generate subtitles from audio or fetch from an API
-  res.status(501).json({ error: 'Subtitle generation not implemented yet' });
+// Speech-to-text subtitle generation endpoint
+app.post('/api/subtitles/generate', upload.single('media'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No media file uploaded' });
+  const filePath = req.file.path;
+  const py = spawn('python3', ['generate_subtitles.py', filePath], { cwd: __dirname });
+  let srt = '';
+  let err = '';
+  py.stdout.on('data', data => { srt += data.toString(); });
+  py.stderr.on('data', data => { err += data.toString(); });
+  py.on('close', code => {
+    // Clean up uploaded file
+    require('fs').unlink(filePath, () => {});
+    if (code !== 0) {
+      return res.status(500).json({ error: 'Subtitle generation failed', details: err });
+    }
+    res.set('Content-Type', 'text/plain');
+    res.send(srt);
+  });
 });
 
 // TMDB integration for movie suggestions

@@ -66,4 +66,15 @@ export async function fetchSubtitles(title, language = 'en') {
     body: JSON.stringify({ title, language })
   });
   return res.json();
+}
+
+export async function generateSubtitles(file) {
+  const formData = new FormData();
+  formData.append('media', file);
+  const res = await fetch(`${API_BASE}/subtitles/generate`, {
+    method: 'POST',
+    body: formData,
+  });
+  if (!res.ok) throw new Error('Subtitle generation failed');
+  return res.text();
 } 
